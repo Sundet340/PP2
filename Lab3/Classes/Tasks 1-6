@@ -1,0 +1,63 @@
+class StringManipulator:
+    def __init__(self):
+        self.string = ""
+
+    def getString(self):
+        self.string = input("Enter a string: ")
+
+    def printString(self):
+        print(self.string.upper())
+
+class Shape:
+    def area(self):
+        return 0
+
+class Square(Shape):
+    def __init__(self, length):
+        self.length = length
+
+    def area(self):
+        return self.length ** 2
+
+class Rectangle(Shape):
+    def __init__(self, length, width):
+        self.length = length
+        self.width = width
+
+    def area(self):
+        return self.length * self.width
+
+import math
+class Point:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+    def show(self):
+        print(f"({self.x}, {self.y})")
+
+    def move(self, x, y):
+        self.x = x
+        self.y = y
+
+    def dist(self, other):
+        return math.sqrt((self.x - other.x) ** 2 + (self.y - other.y) ** 2)
+
+class Account:
+    def __init__(self, owner, balance=0):
+        self.owner = owner
+        self.balance = balance
+
+    def deposit(self, amount):
+        self.balance += amount
+        print(f"Deposited: {amount}, New Balance: {self.balance}")
+
+    def withdraw(self, amount):
+        if amount > self.balance:
+            print("Insufficient funds!")
+        else:
+            self.balance -= amount
+            print(f"Withdrawn: {amount}, New Balance: {self.balance}")
+
+# Filter prime numbers using filter and lambda
+filter_prime_lambda = lambda numbers: list(filter(lambda n: all(n % i != 0 for i in range(2, int(n**0.5) + 1)) and n > 1, numbers))

@@ -1,0 +1,15 @@
+def is_highly_rated(movie):
+    return movie["imdb"] > 5.5
+
+def highly_rated_movies(movies):
+    return [movie for movie in movies if movie["imdb"] > 5.5]
+
+def movies_by_category(movies, category):
+    return [movie for movie in movies if movie["category"] == category]
+
+def average_imdb(movies):
+    return sum(movie["imdb"] for movie in movies) / len(movies)
+
+def average_imdb_by_category(movies, category):
+    filtered_movies = movies_by_category(movies, category)
+    return sum(movie["imdb"] for movie in filtered_movies) / len(filtered_movies) if filtered_movies else 0

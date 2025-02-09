@@ -1,0 +1,34 @@
+#Exercise 1
+from datetime import datetime, timedelta
+
+current_date = datetime.today()
+new_date = current_date - timedelta(days=5)
+
+print("Current Date:", current_date.date())
+print("Date 5 days ago:", new_date.date())
+
+#Exercise 2
+from datetime import datetime, timedelta
+
+today = datetime.today()
+yesterday = today - timedelta(days=1)
+tomorrow = today + timedelta(days=1)
+
+print("Yesterday:", yesterday.date())
+print("Today:", today.date())
+print("Tomorrow:", tomorrow.date())
+
+#Exercise 3
+from datetime import datetime
+
+current_time = datetime.now().replace(microsecond=0)
+print("Datetime without microseconds:", current_time)
+
+#Exercise 4
+from datetime import datetime
+
+date1 = datetime(2024, 2, 1, 12, 0, 0)  # Example date
+date2 = datetime(2024, 2, 9, 15, 30, 0)  # Example date
+
+difference = (date2 - date1).total_seconds()
+print("Difference in seconds:", difference)

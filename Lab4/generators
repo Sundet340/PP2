@@ -1,0 +1,58 @@
+#Exercise 1
+def square_generator(N):
+    for i in range(N + 1):
+        yield i ** 2
+
+#Example usage:
+N = int(input("Enter N: "))
+for square in square_generator(N):
+    print(square, end=" ")
+print()
+
+#Exercise 2
+def even_generator(n):
+    for i in range(0, n + 1, 2):
+        yield i
+
+#Taking input from the user
+n = int(input("Enter n: "))
+print(",".join(str(num) for num in even_generator(n)))
+
+#Exercise 3
+def divisible_by_3_and_4(n):
+    for i in range(n + 1):
+        if i % 3 == 0 and i % 4 == 0:
+            yield i
+
+#Example usage:
+n = int(input("Enter n: "))
+for num in divisible_by_3_and_4(n):
+    print(num, end=" ")
+print()
+
+#Exercise 4
+def squares(a, b):
+    for i in range(a, b + 1):
+        yield i ** 2
+
+#Example usage:
+a = int(input("Enter a: "))
+b = int(input("Enter b: "))
+
+for square in squares(a, b):
+    print(square, end=" ")
+print()
+
+#Exercise 5
+def countdown(n):
+    while n >= 0:
+        yield n
+        n -= 1
+
+#Example usage:
+n = int(input("Enter n: "))
+for num in countdown(n):
+    print(num, end=" ")
+print()
+
+

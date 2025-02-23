@@ -1,0 +1,43 @@
+import re
+
+def match_a_followed_by_b(string):
+    return re.fullmatch(r'a*b*', string) is not None
+
+def match_a_followed_by_2_to_3_b(string):
+    return re.fullmatch(r'ab{2,3}', string) is not None
+
+def find_lowercase_with_underscore(string):
+    return re.findall(r'\b[a-z]+_[a-z]+\b', string)
+
+def find_upper_followed_by_lower(string):
+    return re.findall(r'[A-Z][a-z]+', string)
+
+def match_a_followed_by_anything_ending_b(string):
+    return re.fullmatch(r'a.*b', string) is not None
+
+def replace_spaces_commas_dots(string):
+    return re.sub(r'[ ,.]+', ':', string)
+
+def snake_to_camel(snake_str):
+    return ''.join(word.title() if i > 0 else word for i, word in enumerate(snake_str.split('_')))
+
+def split_at_uppercase(string):
+    return re.split(r'(?=[A-Z])', string)
+
+def insert_spaces_between_capitals(string):
+    return re.sub(r'(?<!^)(?=[A-Z])', ' ', string)
+
+def camel_to_snake(camel_str):
+    return re.sub(r'(?<!^)(?=[A-Z])', '_', camel_str).lower()
+
+# Example usage
+print(match_a_followed_by_b("abbb"))  # True
+print(match_a_followed_by_2_to_3_b("abb"))  # True
+print(find_lowercase_with_underscore("this_is_a_test example_text"))  # ['this_is', 'example_text']
+print(find_upper_followed_by_lower("Hello World Test String"))  # ['Hello', 'World', 'Test', 'String']
+print(match_a_followed_by_anything_ending_b("axxxb"))  # True
+print(replace_spaces_commas_dots("Hello, world. How are you?"))  # "Hello:world:How:are:you:"
+print(snake_to_camel("this_is_a_test"))  # "thisIsATest"
+print(split_at_uppercase("SplitAtUppercase"))  # ['Split', 'At', 'Uppercase']
+print(insert_spaces_between_capitals("InsertSpacesBetweenCapitals"))  # "Insert Spaces Between Capitals"
+print(camel_to_snake("CamelCaseString"))  # "camel_case_string"

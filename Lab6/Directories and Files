@@ -1,0 +1,71 @@
+import os
+import shutil
+
+# 1. List only directories, files, and all contents in a specified path
+def list_files_and_dirs(path="."):
+    directories = [d for d in os.listdir(path) if os.path.isdir(os.path.join(path, d))]
+    files = [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
+    all_contents = os.listdir(path)
+    return {"Directories": directories, "Files": files, "All": all_contents}
+
+# 2. Check access to a specified path
+def check_access(path):
+    return {
+        "Exists": os.path.exists(path),
+        "Readable": os.access(path, os.R_OK),
+        "Writable": os.access(path, os.W_OK),
+        "Executable": os.access(path, os.X_OK)
+    }
+
+# 3. Check if path exists and find filename & directory portion
+def check_path(path):
+    if os.path.exists(path):
+        return {"Directory": os.path.dirname(path), "Filename": os.path.basename(path)}
+    return "Path does not exist"
+
+# 4. Count the number of lines in a text file
+def count_lines_in_file(file_path):
+    try:
+        with open(file_path, "r") as f:
+            return sum(1 for _ in f)
+    except FileNotFoundError:
+        return "File not found"
+
+# 5. Write a list to a file
+def write_list_to_file(file_path, data_list):
+    with open(file_path, "w") as f:
+        f.writelines("\n".join(data_list))
+
+# 6. Generate 26 text files named A.txt to Z.txt
+def generate_alphabet_files():
+    for letter in range(65, 91):  # ASCII values for A-Z
+        with open(f"{chr(letter)}.txt", "w") as f:
+            f.write(f"This is file {chr(letter)}.txt")
+
+# 7. Copy contents of a file to another file
+def copy_file(source, destination):
+    try:
+        shutil.copy(source, destination)
+        return f"File copied from {source} to {destination}"
+    except FileNotFoundError:
+        return "Source file not found"
+
+# 8. Delete file after checking access and existence
+def delete_file(file_path):
+    if os.path.exists(file_path):
+        if os.access(file_path, os.W_OK):
+            os.remove(file_path)
+            return f"{file_path} has been deleted"
+        else:
+            return "No write permission to delete the file"
+    return "File does not exist"
+
+# Example Usage:
+print(list_files_and_dirs("."))  # Lists directories, files, and all contents
+print(check_access("test.txt"))  # Check access rights
+print(check_path("test.txt"))  # Check if path exists and its components
+print(count_lines_in_file("test.txt"))  # Count lines in a file
+write_list_to_file("output.txt", ["Line 1", "Line 2", "Line 3"])  # Write list to file
+generate_alphabet_files()  # Create A.txt to Z.txt
+print(copy_file("output.txt", "copy.txt"))  # Copy file contents
+print(delete_file("copy.txt"))  # Delete a file safely

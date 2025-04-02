@@ -1,98 +1,133 @@
 import pygame
 
+pygame.init()
+FPS = 120
+FramePerSec = pygame.time.Clock()
 
-def main():
-    pygame.init()
-    screen = pygame.display.set_mode((640, 480))
-    clock = pygame.time.Clock()
-    
-    radius = 15
-    mode = 'blue'
-    shape = 'freehand'  # new: default shape mode
-    points = []
-    shapes = []  # Store drawn shapes
-    start_pos = None  # Store start position for shapes
-    color = (0, 0, 255)
-    font_small = pygame.font.SysFont("Verdana", 20)
-    
-    while True:
-        pressed = pygame.key.get_pressed()
-        alt_held = pressed[pygame.K_LALT] or pressed[pygame.K_RALT]
-        ctrl_held = pressed[pygame.K_LCTRL] or pressed[pygame.K_RCTRL]
-        
+# Setting window size
+win_x = 500
+win_y = 500
+
+win = pygame.display.set_mode((win_x, win_y))
+pygame.display.set_caption('Paint')
+
+# Class for drawing
+class drawing(object):
+
+    def __init__(self):
+        self.color = (0, 0, 0)  # Default drawing color (black)
+        self.rad = 6  # Default brush radius
+        self.eraser_mode = False  # Flag for eraser mode
+
+    # Drawing Function
+    def draw(self, win, pos):
+        if self.eraser_mode:
+            # If eraser mode is enabled, draw in white (erase)
+            pygame.draw.circle(win, (255, 255, 255), (pos[0], pos[1]), 20)  
+        else:
+            # Otherwise, draw with the selected color
+            pygame.draw.circle(win, self.color, (pos[0], pos[1]), self.rad)  
+
+    # Detecting clicks
+    def click(self, win, color_buttons, other_buttons):
+        pos = pygame.mouse.get_pos()  # Get the current mouse position
+
+        # If the left mouse button is pressed and within the drawing area
+        if pygame.mouse.get_pressed()[0] and pos[0] < 400 and pos[1] > 25:
+            self.draw(win, pos)  # Draw at the cursor position
+
+        # If clicking in the button area
+        elif pygame.mouse.get_pressed()[0]:
+            for button in color_buttons:
+                # Check if the click is inside a color button
+                if button.x < pos[0] < button.x + button.width and button.y < pos[1] < button.y + button.height:
+                    self.color = button.color2  # Change drawing color
+                    self.eraser_mode = False  # Disable eraser mode
+
+            for button in other_buttons:
+                # Check if the click is inside a functional button
+                if button.x < pos[0] < button.x + button.width and button.y < pos[1] < button.y + button.height:
+                    if button.action == 1:
+                        win.fill((255, 255, 255))  # Clear the screen
+                    elif button.action == 2:
+                        self.eraser_mode = True  # Enable eraser mode
+
+
+# Class for buttons
+class button(object):
+
+    def __init__(self, x, y, width, height, color, color2, outline=0, action=0, text=''):
+        self.x = x  # X position
+        self.y = y  # Y position
+        self.height = height  # Button height
+        self.width = width  # Button width
+        self.color = color  # Button background color
+        self.outline = outline  # Outline thickness
+        self.color2 = color2  # Text color
+        self.action = action  # Button function identifier
+        self.text = text  # Button text
+
+    # Function to draw the button
+    def draw(self, win):
+        pygame.draw.rect(win, self.color, (self.x, self.y, self.width, self.height), self.outline)
+        font = pygame.font.SysFont('times new roman', 30)  # Font style
+        text = font.render(self.text, 1, self.color2)  # Render button text
+        win.blit(text, (int(self.x + self.width / 2 - text.get_width() / 2),
+                        int(self.y + self.height / 2 - text.get_height() / 2)))  # Center text
+
+
+# Function to handle drawing and button updates
+def draw(win):
+    player1.click(win, Buttons_color, Buttons_other)  # Handle user input
+
+    # Draw button panel
+    pygame.draw.rect(win, (0, 0, 0), (400, 0, 100, 500), 2)  
+    pygame.draw.rect(win, (255, 255, 255), (400, 0, 100, 500))  
+    pygame.draw.rect(win, (0, 0, 0), (0, 0, 400, 500), 2)  
+
+    # Draw buttons
+    for button in Buttons_color:
+        button.draw(win)
+
+    for button in Buttons_other:
+        button.draw(win)
+
+    pygame.display.update()  # Update display
+
+
+# Main game loop
+def main_loop():
+    run = True
+    while run:
+        keys = pygame.key.get_pressed()  # Get pressed keys
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                return
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_w and ctrl_held:
-                    return
-                if event.key == pygame.K_F4 and alt_held:
-                    return
-                if event.key == pygame.K_ESCAPE:
-                    return
+            if event.type == pygame.QUIT or keys[pygame.K_ESCAPE]:  # Quit condition
+                run = False
 
-                # Color selection
-                if event.key == pygame.K_r:
-                    mode = 'red'
-                    color = (255, 0, 0)
-                elif event.key == pygame.K_g:
-                    mode = 'green'
-                    color = (0, 255, 0)
-                elif event.key == pygame.K_b:
-                    mode = 'blue'
-                    color = (0, 0, 255)
-                elif event.key == pygame.K_e:  # Eraser
-                    mode = 'eraser'
-                    color = (0, 0, 0)
+        draw(win)  # Update the window
 
-                # Shape selection
-                if event.key == pygame.K_f:
-                    shape = 'freehand'
-                    radius = 15
-                elif event.key == pygame.K_c:
-                    shape = 'circle'
-                elif event.key == pygame.K_l:
-                    shape = 'rectangle'
-                
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                start_pos = event.pos  # Store start position for shape drawing
-
-            if event.type == pygame.MOUSEMOTION:
-                if shape == 'freehand' and pygame.mouse.get_pressed()[0]:
-                    position = event.pos
-                    points.append((position, color, radius))
-                    points = points[-256:]
-
-            if event.type == pygame.MOUSEBUTTONUP:
-                end_pos = event.pos
-                if shape == 'rectangle':
-                    x1, y1 = start_pos
-                    x2, y2 = end_pos
-                    rect_x = min(x1, x2)
-                    rect_y = min(y1, y2)
-                    rect_width = abs(x2 - x1)
-                    rect_height = abs(y2 - y1)
-                    shapes.append(('rectangle', (rect_x, rect_y, rect_width, rect_height), color))
-                elif shape == 'circle':
-                    center = ((start_pos[0] + end_pos[0]) // 2, (start_pos[1] + end_pos[1]) // 2)
-                    radius = max(abs(end_pos[0] - start_pos[0]) // 2, abs(end_pos[1] - start_pos[1]) // 2)
-                    shapes.append(('circle', center, radius, color))
-
-        screen.fill((0, 0, 0))
-        for pos, c, r in points:
-            pygame.draw.circle(screen, c, pos, r)
-        
-        for shape_data in shapes:
-            if shape_data[0] == 'rectangle':
-                pygame.draw.rect(screen, shape_data[2], shape_data[1])
-            elif shape_data[0] == 'circle':
-                pygame.draw.circle(screen, shape_data[3], shape_data[1], shape_data[2])
-        
-        shapetext = font_small.render(str(shape), True, (255, 255, 255))
-        screen.blit(shapetext, (0,0))
-
-        pygame.display.flip()
-        clock.tick(60)
+    pygame.quit()  # Quit pygame when loop ends
 
 
-main()
+player1 = drawing()  # Create a drawing instance
+win.fill((255, 255, 255))  # Set background to white
+
+# Defining color buttons
+redButton = button(453, 30, 40, 40, (255, 0, 0), (255, 0, 0))  # Red
+blueButton = button(407, 30, 40, 40, (0, 0, 255), (0, 0, 255))  # Blue
+greenButton = button(407, 76, 40, 40, (0, 255, 0), (0, 255, 0))  # Green
+orangeButton = button(453, 76, 40, 40, (255, 192, 0), (255, 192, 0))  # Orange
+yellowButton = button(407, 122, 40, 40, (255, 255, 0), (255, 255, 0))  # Yellow
+purpleButton = button(453, 122, 40, 40, (112, 48, 160), (112, 48, 160))  # Purple
+blackButton = button(407, 168, 40, 40, (0, 0, 0), (0, 0, 0))  # Black
+
+# Defining functional buttons
+clrButton = button(407, 214, 86, 40, (201, 201, 201), (0, 0, 0), 0, 1, 'Clear')  # Clear button
+eraserButton = button(407, 260, 86, 40, (201, 201, 201), (0, 0, 0), 0, 2, 'Eraser')  # Eraser button
+
+# Store buttons in lists
+Buttons_color = [blueButton, redButton, greenButton, orangeButton, yellowButton, purpleButton, blackButton]
+Buttons_other = [clrButton, eraserButton]
+
+main_loop()  # Start the main loop
+FramePerSec.tick(FPS)  # Set FPS limit

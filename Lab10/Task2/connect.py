@@ -1,17 +1,21 @@
 import psycopg2
-from config import load_config
+import configparser
+
+def load_config(filename='database.ini', section='postgresql'):
+    parser = configparser.ConfigParser()
+    parser.read(filename)
+
+    db = {}
+    if parser.has_section(section):
+        params = parser.items(section)
+        for param in params:
+            db[param[0]] = param[1]
+    return db
 
 def connect(config):
-    """ Connect to the PostgreSQL database server """
     try:
-        # connecting to the PostgreSQL server
-        with psycopg2.connect(**config) as conn:
-            print('Connected to the PostgreSQL server.')
-            return conn
-    except (Exception. psycopg2.DatabaseError ) as error:
-        print(error)
+        conn = psycopg2.connect(**config)
+        return conn
+    except psycopg2.DatabaseError as error:
+        print(f"Database error: {error}")
 
-
-if __name__ == '__main__':
-    config = load_config()
-    connect(config)
